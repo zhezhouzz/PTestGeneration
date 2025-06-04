@@ -1,11 +1,9 @@
-stat/*
-.stat.json
-output/*
 data/*
 *.DS_Store
 *.png
 *.dump
 *.log
+*client.p
 *PCheckerOutput*
 *PGenerated*
 *.dot
@@ -38,3 +36,5 @@ setup.log
 
 # Local OPAM switch
 _opam/
+
+*.spec.md

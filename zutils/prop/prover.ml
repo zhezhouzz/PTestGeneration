@@ -1,0 +1,160 @@
+open Z3
+open Solver
+open Goal
+open Sugar
+open Syntax
+open Myconfig
+module Propencoding = Propencoding
+
+type smt_result = SmtSat of Model.model | SmtUnsat | Timeout
+
+let layout_smt_result = function
+  | SmtSat model ->
+      ( _log "model" @@ fun _ ->
+        Printf.printf "model:\n%s\n"
+        @@ Sugar.short_str 1000 @@ Z3.Model.to_string model );
+      "sat"
+  | SmtUnsat -> "unsat"
+  | Timeout -> "timeout"
+
+type prover = {
+  ax_sys : laxiom_system;
+  ctx : context;
+  solver : solver;
+  goal : goal;
+}
+
+let _mk_prover timeout_bound =
+  let ctx =
+    mk_context
+      [
+        ("model", "true");
+        ("proof", "false");
+        ("timeout", string_of_int timeout_bound);
+      ]
+  in
+  let solver = mk_solver ctx None in
+  let goal = mk_goal ctx true false false in
+  let ax_sys = Axiom.emp in
+  { ctx; ax_sys; solver; goal }
+
+let mk_prover () = _mk_prover (get_prover_timeout_bound ())
+let _prover : prover option ref = ref None
+
+let get_prover () =
+  match !_prover with
+  | Some p -> p
+  | None ->
+      let p = mk_prover () in
+      let () = _prover := Some p in
+      p
+
+let get_ctx () = (get_prover ()).ctx
+
+let update_axioms axioms =
+  let ctx = get_ctx () in
+  let axioms =
+    List.map
+      (fun (name, tasks, prop) ->
+        let z3_prop = Propencoding.to_z3 ctx prop in
+        (name, tasks, prop, z3_prop))
+      axioms
+  in
+  match !_prover with
+  | Some p ->
+      _prover := Some { p with ax_sys = Axiom.add_laxioms p.ax_sys axioms }
+  | None ->
+      let p = mk_prover () in
+      _prover := Some { p with ax_sys = Axiom.add_laxioms p.ax_sys axioms }
+
+let handle_sat_result solver =
+  (* let _ = printf "solver_result\n" in *)
+  match check solver [] with
+  | UNSATISFIABLE -> SmtUnsat
+  | UNKNOWN ->
+      (* raise (InterExn "time out!") *)
+      (* Printf.printf "\ttimeout\n"; *)
+      Timeout
+  | SATISFIABLE -> (
+      match Solver.get_model solver with
+      | None -> failwith "never happen"
+      | Some m -> SmtSat m)
+
+let check_sat (task, prop) =
+  let { goal; solver; ax_sys; ctx } = get_prover () in
+  let axioms =
+    List.map (Propencoding.to_z3 ctx) @@ Axiom.find_axioms ax_sys (task, prop)
+  in
+  let query = Propencoding.to_z3 ctx prop in
+  let _ =
+    _log_queries @@ fun _ ->
+    Pp.printf "@{<bold>QUERY:@}\n%s\n" (Expr.to_string query)
+  in
+  Goal.reset goal;
+  Goal.add goal (axioms @ [ query ]);
+  let _ =
+    _log_queries @@ fun _ ->
+    Pp.printf "@{<bold>Goal:@}\n%s\n" (Goal.to_string goal)
+  in
+  (* let goal = Goal.simplify goal None in *)
+  (* let _ = *)
+  (*   _log_queries @@ fun _ -> *)
+  (*   Pp.printf "@{<bold>Simplifid Goal:@}\n%s\n" (Goal.to_string goal) *)
+  (* in *)
+  Goal.add goal axioms;
+  Solver.reset solver;
+  Solver.add solver (get_formulas goal);
+  let time_t, res = Sugar.clock (fun () -> handle_sat_result solver) in
+  let () =
+    _log_stat @@ fun _ -> Pp.printf "@{<bold>Z3 Solving time: %.2f@}\n" time_t
+  in
+  res
+
+let check_sat_bool (task, prop) =
+  let res = check_sat (task, prop) in
+  let () =
+    _log_queries @@ fun _ ->
+    Pp.printf "@{<bold>SAT(%s): @} %s\n" (layout_smt_result res)
+      (Front.layout_prop prop)
+  in
+  let res =
+    match res with
+    | SmtUnsat -> false
+    | SmtSat model ->
+        ( _log "model" @@ fun _ ->
+          Printf.printf "model:\n%s\n"
+          @@ Sugar.short_str 1000 @@ Z3.Model.to_string model );
+        true
+    | Timeout ->
+        (_log_queries @@ fun _ -> Pp.printf "@{<bold>SMTTIMEOUT@}\n");
+        false
+  in
+  res
+
+let _tmp_path_prefix str = spf "/tmp/%s.scm" str
+
+let _store_input (task, prop) =
+  let path =
+    match task with
+    | None -> _tmp_path_prefix "tmp"
+    | Some str -> _tmp_path_prefix str
+  in
+  Sexplib.Sexp.save path (sexp_of_prop Nt.sexp_of_nt (Not prop))
+
+(** Unsat means true; otherwise means false *)
+let check_valid (task, prop) =
+  let () = _store_input (task, prop) in
+  (* let () = *)
+  (*   Printf.printf "input:\n%s\n" *)
+  (*     (Sexplib.Sexp.to_string @@ sexp_of_prop Nt.sexp_of_nt (Not prop)) *)
+  (* in *)
+  match check_sat (task, Not prop) with
+  | SmtUnsat -> true
+  | SmtSat model ->
+      ( _log "model" @@ fun _ ->
+        Printf.printf "model:\n%s\n"
+        @@ Sugar.short_str 1000 @@ Z3.Model.to_string model );
+      false
+  | Timeout ->
+      (_log_queries @@ fun _ -> Pp.printf "@{<bold>SMTTIMEOUT@}\n");
+      false

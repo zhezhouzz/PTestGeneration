@@ -1,0 +1,16 @@
+(library
+ (name commands)
+ (public_name haft.commands)
+ (libraries
+  core
+  language
+  ; ntypecheck
+  ; synthesis
+  ; interpreter
+  ; pbackend
+  )
+ (modules
+  cbin)
+ (preprocess
+  (pps ppx_inline_test ppx_assert ppx_jane ppx_here))
+ (inline_tests))

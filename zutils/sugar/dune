@@ -1,0 +1,17 @@
+(library
+ (name sugar)
+ (public_name zutils.sugar)
+ (wrapped true)
+ (modules
+   assertion
+   sugarAux
+   json
+   zlog
+   rename
+   pp
+   typed
+   sugar
+ )
+ (preprocess (pps ppx_here ppx_optcomp ppx_compare ppx_sexp_conv ppx_inline_test ppx_assert ppx_deriving.show ppx_deriving.eq ppx_deriving.ord))
+ (libraries zdatatype core yojson dolog spectrum ppx_here)
+)

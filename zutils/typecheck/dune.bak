@@ -1,0 +1,12 @@
+(library
+ (name typecheck)
+ (public_name zutils.typecheck)
+ (wrapped true)
+ (libraries prop typectx)
+ (modules
+  normal_constant_typing
+  constraint_typing
+  typecheck
+)
+(preprocess (pps ppx_here))
+)

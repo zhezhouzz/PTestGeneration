@@ -1,0 +1,17 @@
+(library
+ (name normalty)
+ (public_name zutils.normalty)
+ (wrapped true)
+ (modules_without_implementation)
+ (libraries sugar core ocamlParser ppxlib myconfig)
+ (modules
+   ast
+   subst
+   frontend
+   syntax
+   unification
+   normalty
+ )
+ (preprocess (pps ppx_optcomp ppx_compare ppx_sexp_conv ppx_inline_test ppx_assert ppx_deriving.show ppx_deriving.eq ppx_deriving.ord ppx_here))
+ (inline_tests)
+)

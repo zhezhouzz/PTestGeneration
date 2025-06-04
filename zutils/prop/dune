@@ -1,0 +1,37 @@
+; (copy_files# frontend/*.ml{,i})
+
+(library
+ (name prop)
+ (public_name zutils.prop)
+ (wrapped true)
+ (modules_without_implementation)
+ (libraries sugar normalty core ocamlParser ppxlib z3 myconfig typectx)
+ (modules
+   prop
+   ast
+   syntax
+   ;; Frontend
+   common
+   to_id
+   to_op
+   to_constant
+   to_lit
+   to_notation
+   to_prop
+   to_axiom
+   to_ctx
+   front
+   ;; Typecheck
+   normal_constant_typing
+   constraint_typing
+   typecheck
+   ;; Prover
+   z3aux constencoding litencoding propencoding axiom data simplProp prover test
+ )
+ (preprocess (pps ppx_optcomp ppx_compare ppx_sexp_conv ppx_inline_test ppx_assert ppx_deriving.show ppx_deriving.eq ppx_deriving.ord ppx_here ppx_inline_test))
+ (inline_tests)
+)
+
+(rule
+ (target meta-config.json)
+ (action (copy %{project_root}/meta-config.json %{target})))

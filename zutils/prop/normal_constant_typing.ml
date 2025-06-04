@@ -1,0 +1,20 @@
+open Syntax
+(* open Sugar *)
+
+let ty_set ty = Nt.Ty_constructor ("set", [ ty ])
+let infer_constant (c : constant) = constant_to_nt c
+(* let open Nt in *)
+(* match c with U -> unit_ty | I _ -> int_ty | B _ -> bool_ty *)
+(* | Tu l -> Ty_tuple (List.map infer_constant l) *)
+(* | Enum { enum_elems; enum_name; _ } -> Ty_enum { enum_elems; enum_name } *)
+(* | SetLiteral l -> *)
+(*     let tys = List.map infer_constant l in *)
+(*     let ty = *)
+(*       match tys with *)
+(*       | [] -> _die_with [%here] "empty set literal is not allowed" *)
+(*       | ty :: tys -> *)
+(*           if List.for_all (Nt.equal_nt ty) tys then ty *)
+(*           else _die_with [%here] "set contains multiple typed values" *)
+(*     in *)
+(*     ty_set ty *)
+(* | Dt _ -> _die_with [%here] "unimp datatype instance" *)

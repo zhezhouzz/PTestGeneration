@@ -1,0 +1,26 @@
+; (env
+;  (dev
+;   (flags
+;    (:standard -w -32-35-27-33-26-64)))
+;  (release
+;   (flags
+;    (:standard -w -32-35-27-33-26-64))
+;   (ocamlopt_flags
+;    (:standard -unsafe -noassert -inline 100))))
+
+(library
+ (public_name haft.syntax)
+ (name syntax)
+ (wrapped true)
+ (modules
+   ; common
+   ; item
+   ; inst
+   ; pmachine
+   ; wrapper
+   ; plan
+   syntax
+ )
+ (preprocess
+  (pps ppx_optcomp ppx_compare ppx_sexp_conv ppx_here))
+ (libraries core ast))

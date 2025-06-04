@@ -1,0 +1,9 @@
+(library
+ (name zutils)
+ (public_name zutils)
+ (wrapped true)
+ (modules
+   zutils
+ )
+ (libraries zdatatype normalty ocamlParser typectx myconfig prop dtree)
+)
