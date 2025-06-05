@@ -2,7 +2,7 @@
 
 # Install
 
-We install `P` on `dev_p3.0/param_testcases` branch: https://github.com/p-org/P/tree/dev_p3.0/param_testcases
+We install `P` on `pex-param-test` branch: https://github.com/zhezhouzz/P/tree/pex-param-test
 
 run `Bld/build.sh` to install it (also following the install instructions of P langauge: https://p-org.github.io/P/getstarted/install/).
 
@@ -86,21 +86,17 @@ More examples can be found under `Examples` folder in the internal repo `TestExa
 
 # Run Benchmark
 
-we provide script to run benchmarks in the internal `TestExamples-PTestGeneration` repo.
+we provide script to run synthesizer over benchmarks in the internal `TestExamples-PTestGeneration` repo.
 
-```
-    python3 script/syn.py              // synthesize clients
-    python3 script/runp.py             // run p compiler and checker
-    python3 script/analysis.py         // analysis result
-```
+### Setup
 
 The file `script/common.py` stores the meta information of benchmarks, includes the path to benchmarks directory (`prefix`), path to each benchmark (`benchmarks`), default test iterations (`test_num`) and the map of client names to the corresponding test case name used in p checking (`client_name_to_tc`), and installed P executable (`curp`).
 
-We can run specific benchmark or specfic client machine use the following command:
 ```
-    python3 script/runp.py -b ClockBoundFormalModels
-    python3 script/runp.py -b ClockBoundFormalModels -n GClientSame
+    python3 script/syn.py              // synthesize clients
 ```
+
+### File Hierarchy
 
 The generated code are in `PSyn` folder, structured as following:
 
@@ -115,14 +111,13 @@ PSyn
 + `Library.p`: auxiliary functions used by synthesized client machines in `SynClient.p`.
 + `SynDriver.p`: test driver and script for synthesized client machines.
 
+### Notes
 
-# Notes
+Note that `C#` functions cannot be invoked in global P functions, thus we need to add some global functions into synthesized client manually (in `PSyn/NewClient.p`).
+- copy `record_gen` and `key_gen` in `S3IndexBrickManagerPModels/PSyn/Library.p` into `GClientSame` and `GClientDiff` machine.
+- `wait_time_gen` in `ClockBoundFormalModels/ClockBound/PSyn/Library.p` into `ReadAfterWrite` and `NoAdj` machine.
 
-Note that `C#` functions cannot be invoked in global P functions, thus we need to add some global functions into synthesized client manually.
-- `record_gen` and `key_gen` in `S3IndexBrickManagerPModels/PSyn/Library.p`.
-- `wait_time_gen` and `key_gen` in `ClockBoundFormalModels/ClockBound/PSyn/Library.p`.
-
-The `ChainReplication` requires the client machine to send back a `Ack` message after intialization, which cannot be synthesized. For now, just add one event handler in the `Init` state.
+The `ChainReplication` requires the client machine to send back a `Ack` message after intialization, which cannot be synthesized. For now, just add one event handler in the `Init` state of machine `GClientHead`, `GClientTail`, and  `GClientMid`.
 ```
 start state Init {
     entry {
@@ -137,3 +132,17 @@ start state Init {
   }
 ```
 
+# Analyze Benchmark
+
+We provide script to run p checker over benchmarks in the internal `TestExamples-PTestGeneration` repo.
+
+```
+    python3 script/runp.py             // run p compiler and checker
+    python3 script/analysis.py         // analysis result
+```
+
+We can run specific benchmark or specfic client machine use the following command:
+```
+    python3 script/runp.py -b ClockBoundFormalModels
+    python3 script/runp.py -b ClockBoundFormalModels -n GClientSame
+```
