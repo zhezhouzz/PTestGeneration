@@ -12,10 +12,10 @@ curp = "~/workspace/P/Bld/Drops/Debug/Binaries/net8.0/p"
 
 cases = [
 "ClockBoundFormalModels",
-# "S3IndexBrickManagerPModels",
-# "Kermit2PCModel",
-# "MemoryDBCRRConflictResolutionModel",
-# "ChainReplication"
+"S3IndexBrickManagerPModels",
+"Kermit2PCModel",
+"MemoryDBCRRConflictResolutionModel",
+"ChainReplication"
 ]
 
 prefix = "/Users/zhezzhou/workspace/amazon_ws/src/TestExamples-PTestGeneration/"
