@@ -5,7 +5,7 @@ import sys
 import time
 import re
 import logging
-from common import benchmarks, cases, prefix, client_name_to_tc, test_num
+from common import benchmarks, cases, prefix, client_name_to_tc, test_num, curp
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -44,8 +44,6 @@ def check_valid(trace):
     return True
 
 from common import benchmarks, cases, prefix
-
-curp = "~/workspace/P/Bld/Drops/Debug/Binaries/net8.0/p"
 
 def exec(command):
     cmd = " ".join(command)

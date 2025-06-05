@@ -5,7 +5,7 @@ import sys
 import time
 import re
 import logging
-from common import benchmarks, cases, prefix, client_name_to_tc, test_num
+from common import benchmarks, cases, prefix, client_name_to_tc, test_num, curp
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

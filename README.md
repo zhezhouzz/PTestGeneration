@@ -2,6 +2,12 @@
 
 # Install
 
+We install `P` on `dev_p3.0/param_testcases` branch: https://github.com/p-org/P/tree/dev_p3.0/param_testcases
+
+run `Bld/build.sh` to install it (also following the install instructions of P langauge: https://p-org.github.io/P/getstarted/install/).
+
+### Install Synthesizer
+
 The easiest way to install the dependencies is via [OPAM](https://opam.ocaml.org/doc/Install.html).
 
 ```
@@ -9,7 +15,7 @@ The easiest way to install the dependencies is via [OPAM](https://opam.ocaml.org
   opam update
   opam switch create PTest --package=ocaml-base-compiler.5.3.0,ocaml-options-vanilla.1
   eval $(opam env)
-  opam install dune core core_unix yojson conf-c++ conf-python qcheck ocolor dolog ocamlbuild z3 ppx_deriving_yojson menhirLib menhir ppx_deriving ppx_here spectrum ppx_sexp_conv
+  opam install dune core core_unix yojson conf-c++ conf-python qcheck ocolor dolog ocamlbuild z3 ppx_deriving_yojson menhirLib menhir ppx_deriving ppx_here spectrum ppx_sexp_conv bin_prot.v0.17.0
 ```
 
 Then compile this repo:
@@ -88,7 +94,7 @@ we provide script to run benchmarks in the internal `TestExamples-PTestGeneratio
     python3 script/analysis.py         // analysis result
 ```
 
-The file `script/common.py` stores the meta information of benchmarks, includes the path to benchmarks directory (`prefix`), path to each benchmark (`benchmarks`), default test iterations (`test_num`) and the map of client names to the corresponding test case name used in p checking (`client_name_to_tc`).
+The file `script/common.py` stores the meta information of benchmarks, includes the path to benchmarks directory (`prefix`), path to each benchmark (`benchmarks`), default test iterations (`test_num`) and the map of client names to the corresponding test case name used in p checking (`client_name_to_tc`), and installed P executable (`curp`).
 
 We can run specific benchmark or specfic client machine use the following command:
 ```
