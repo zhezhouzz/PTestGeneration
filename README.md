@@ -15,7 +15,7 @@ The easiest way to install the dependencies is via [OPAM](https://opam.ocaml.org
   opam update
   opam switch create PTest --package=ocaml-base-compiler.5.3.0,ocaml-options-vanilla.1
   eval $(opam env)
-  opam install dune core core_unix yojson conf-c++ conf-python qcheck ocolor dolog ocamlbuild z3 ppx_deriving_yojson menhirLib menhir ppx_deriving ppx_here spectrum ppx_sexp_conv bin_prot.v0.17.0
+  opam install dune core core_unix yojson conf-c++ conf-python-3 qcheck ocolor dolog ocamlbuild z3 ppx_deriving_yojson menhirLib menhir ppx_deriving ppx_here spectrum ppx_sexp_conv bin_prot.v0.17.0
 ```
 
 Then compile this repo:
