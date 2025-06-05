@@ -5,7 +5,7 @@ import sys
 import time
 import re
 import logging
-from common import benchmarks, cases, prefix, client_name_to_tc
+from common import benchmarks, cases, prefix, client_name_to_tc, test_num
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -53,8 +53,7 @@ def exec(command):
     try:
         result = subprocess.run(cmd, shell=True,
                                 capture_output=True,
-                                text=True,
-                                check=True)
+                                text=True)
         # print(result.stdout)
         return result
     except subprocess.CalledProcessError as e:
@@ -66,6 +65,7 @@ def exec(command):
         logger.error(f"Unknown: {str(e)}")
 
 def get_timeline(result):
+    # print(result)
     matches = re.finditer(r"^\.\.\.\.\.\ Explored\ ([0-9]*)\ timelines?$", result.stdout, re.MULTILINE)
     for matchNum, match in enumerate(matches, start=1):
         return match.groups()[0]
@@ -74,7 +74,7 @@ def get_timeline(result):
 def run(option, num):
     p_compile_command = [curp, 'compile']
     exec(p_compile_command)
-    p_check_command = [curp, "check", "-tc", str(option), "-v", "-s", str(num)]
+    p_check_command = [curp, "check", "-tc", str(option), "-v", "-s", str(num), "-explore"]
     result = exec(p_check_command)
     timeline = get_timeline(result)
     print(timeline)
@@ -131,7 +131,7 @@ if __name__ == '__main__':
     parser.add_argument('-s', '--size', type=str, help='number of test')
     args = parser.parse_args()
     if args.size is None:
-        num = 1000
+        num = test_num
     else:
         num = args.size
     if args.benchmark is None:

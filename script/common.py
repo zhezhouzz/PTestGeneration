@@ -6,12 +6,14 @@ benchmarks = {
     "ChainReplication": "ChainReplication"
 }
 
+test_num = 100
+
 cases = [
 "ClockBoundFormalModels",
-# "S3IndexBrickManagerPModels",
-# "Kermit2PCModel",
-# "MemoryDBCRRConflictResolutionModel",
-# "ChainReplication"
+"S3IndexBrickManagerPModels",
+"Kermit2PCModel",
+"MemoryDBCRRConflictResolutionModel",
+"ChainReplication"
 ]
 
 prefix = "/Users/zhezzhou/workspace/amazon_ws/src/TestExamples-PTestGeneration/"

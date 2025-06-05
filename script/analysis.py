@@ -5,7 +5,7 @@ import sys
 import time
 import re
 import logging
-from common import benchmarks, cases, prefix, client_name_to_tc
+from common import benchmarks, cases, prefix, client_name_to_tc, test_num
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -103,7 +103,7 @@ if __name__ == '__main__':
     parser.add_argument('-s', '--size', type=str, help='number of test')
     args = parser.parse_args()
     if args.size is None:
-        num = 1000
+        num = test_num
     else:
         num = args.size
     if args.benchmark is None:
